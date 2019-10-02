@@ -4,9 +4,9 @@ INC = inc/minilib.h
 	
 HDR = minilib.h
 
-SRC = src/main.c \
+SRC = src/main.c src/mx_strlen.c
 		
-SRCS = main.c \
+SRCS = main.c mx_strlen.c
 
 SDLF =  -I ./framework/SDL2.framework/Versions/A/Headers -F ./framework -framework SDL2 -rpath ./framework -I ./framework/SDL2_image.framework/Versions/A/Headers -F ./framework -framework SDL2_image -rpath ./framework 
 
