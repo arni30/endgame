@@ -23,6 +23,7 @@
 #define MX_SCREEN_HEIGHT 720
 #define MX_TILE_SIZE 10
 #define MX_PALISADE 30
+#define SPEED 150
 
 
 
