@@ -10,20 +10,22 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w, int
     dst.h = h;
     SDL_RenderCopy(ren, tex, NULL, &dst);
 }
-void drawCoin(SDL_Texture *coin, SDL_Renderer *ren, SDL_Rect *coin_Pos){
+
+void drawCoin(SDL_Texture *coin, SDL_Renderer *ren, SDL_Rect *coin_RECT){
     //rand()%(MX_SCREEN_WIDTH - MX_PALISADE) +MX_PALISADE
-    renderTexture(coin, ren, coin_Pos->x, coin_Pos->y, MX_PALISADE, MX_PALISADE);
+    renderTexture(coin, ren, coin_RECT->x, coin_RECT->y, MX_TILE_SIZE, MX_TILE_SIZE);
 }
 void drawBackground(SDL_Texture *background, SDL_Renderer *ren){
     for (int i = 0; i < xTiles * yTiles; ++i){
         int x = i % xTiles;
         int y = i / xTiles;
-        renderTexture(background, ren, x * MX_PALISADE, y * MX_PALISADE, MX_PALISADE, MX_PALISADE);
+        renderTexture(background, ren, x * MX_BACKGROUND, y * MX_BACKGROUND, MX_BACKGROUND, MX_BACKGROUND);
     }
 }
 
 void create_hero(SDL_Renderer *ren, SDL_Texture *player, SDL_Texture *skelet, SDL_Texture *background, SDL_Texture *score, SDL_Texture *palisade, SDL_Texture *coin){
     const int FPS = 60;
+    int count = 0;
     
     int frameTime = 0;
     int frameW = 0;
@@ -65,8 +67,8 @@ void create_hero(SDL_Renderer *ren, SDL_Texture *player, SDL_Texture *skelet, SD
     SDL_Rect score_RECT = {(MX_SCREEN_WIDTH - 150), 3, 100, 25};
     SDL_Rect player_RECT = {(MX_SCREEN_WIDTH - frameW)/2, (MX_SCREEN_HEIGHT - frameH)/2, frameW, frameH};
     SDL_Rect skelet_Pos = {0, 0, frameWs, frameHs};
-    SDL_Rect skelet_RECT = {0, 0, frameWs, frameHs};
-    SDL_Rect coin_RECT = {60, 60, MX_TILE_SIZE, MX_TILE_SIZE};
+    SDL_Rect skelet_RECT = {0, 0, frameWs*1.2, frameHs*1.2};
+    SDL_Rect coin_RECT = {60, 100, MX_TILE_SIZE, MX_TILE_SIZE};
 
     SDL_SetRenderDrawColor(ren, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_Event event;
@@ -102,6 +104,7 @@ void create_hero(SDL_Renderer *ren, SDL_Texture *player, SDL_Texture *skelet, SD
                 player_Pos.x += frameW;
                 if (player_Pos.x > textW - 65) player_Pos.x = 0;
             }
+            
         }
         // determine velocity toward hero
         float delta_x = player_RECT.x - player_RECT.w/4 - x_pos;
@@ -141,14 +144,19 @@ void create_hero(SDL_Renderer *ren, SDL_Texture *player, SDL_Texture *skelet, SD
         if (player_RECT.y <= 0) player_RECT.y = 0;
         if(player_RECT.x >= MX_SCREEN_WIDTH - frameW) player_RECT.x = MX_SCREEN_WIDTH - frameW;
         SDL_RenderClear(ren);
-                drawBackground(background, ren);
+        drawBackground(background, ren);
         drawCoin(coin,ren, &coin_RECT);
-        if(player_RECT.x + coin_RECT.w >= coin_RECT.x && player_RECT.y <= coin_RECT.y + coin_RECT.h ){
-           //if(player_RECT.y + coin_Pos.h >= coin_Pos.y && player_RECT.y <= coin_Pos.y + coin_Pos.h ){
-               coin_RECT.x = rand()%(MX_SCREEN_WIDTH - 2 * MX_PALISADE - MX_TILE_SIZE) + MX_PALISADE ;
-               coin_RECT.y = rand()%(MX_SCREEN_HEIGHT - 2 * MX_PALISADE - MX_TILE_SIZE) + MX_PALISADE ;
-           //}
-       }
+        if(sqrt(pow(abs(player_RECT.y - coin_RECT.y),2)) + sqrt(pow(abs(player_RECT.x - coin_RECT.x),2)) <= frameW/2-5 + MX_TILE_SIZE/2+5) {
+                
+                coin_RECT.x = rand()%(MX_SCREEN_WIDTH - 2 * MX_PALISADE - MX_TILE_SIZE) + (MX_PALISADE + MX_TILE_SIZE);
+                coin_RECT.y = rand()%(MX_SCREEN_HEIGHT - 2 * MX_PALISADE - MX_TILE_SIZE) + (MX_PALISADE+MX_TILE_SIZE);
+                coin_RECT.x = coin_RECT.x - coin_RECT.x % 30;
+                coin_RECT.y = coin_RECT.y - coin_RECT.y % 30;
+                count++;
+                
+            }
+          
+        
         for(int i = 0; i <=MX_SCREEN_WIDTH; i+=MX_PALISADE){
             for (int  j = 0;j <= MX_SCREEN_HEIGHT; j+=MX_PALISADE){
                 if(i == 0||i == MX_SCREEN_WIDTH-MX_PALISADE){
